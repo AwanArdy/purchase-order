@@ -1,0 +1,56 @@
+<fieldset>
+  <legend>{{ text_instruction }}</legend>
+  <form id="form-purchase-order">
+    <div class="mb-3{% if required %} required{% endif %}">
+      <label for="input-po-number" class="form-label">{{ entry_po_number }}</label>
+      <input type="text" name="po_number" value="" placeholder="{{ entry_po_number }}" id="input-po-number" class="form-control" />
+      <div id="error-po-number" class="invalid-feedback"></div>
+    </div>
+    <div class="d-inline-block pt-2 pd-2 w-100">
+      <div class="float-end">
+        <button type="button" id="button-confirm" class="btn btn-primary">{{ button_confirm }}</button>
+      </div>
+    </div>
+  </form>
+</fieldset>
+
+<script type="text/javascript"><!--
+$('#button-confirm').on('click', function() {
+    var element = this;
+
+    $.ajax({
+        url: 'index.php?route=extension/purchase_order/payment/purchase_order|confirm',
+        type: 'post',
+        data: $('#form-purchase-order').serialize(),
+        dataType: 'json',
+        beforeSend: function() {
+            $(element).prop('disabled', true).addClass('loading');
+        },
+        complete: function() {
+            $(element).prop('disabled', false).removeClass('loading');
+        },
+        success: function(json) {
+            $('.alert-dismissible').remove();
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').removeClass('d-block');
+
+            if (json['error']) {
+                if (json['error']['warning']) {
+                    $('#form-purchase-order').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                }
+                if (json['error']['po_number']) {
+                    $('#input-po-number').addClass('is-invalid');
+                    $('#error-po-number').html(json['error']['po_number']).addClass('d-block');
+                }
+            }
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+//--></script>
