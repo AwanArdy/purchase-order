@@ -3,8 +3,8 @@
   <div class="page-header">
     <div class="container-fluid">
       <div class="float-end">
-        <button type="submit" form="form-payment" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save"></i></button>
-        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply"></i></a>
+        <button type="submit" form="form-payment" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary px-3"><i class="fa-solid fa-floppy-disk me-1"></i> {{ button_save }}</button>
+        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-outline-secondary px-3"><i class="fa-solid fa-arrow-left me-1"></i> {{ button_back }}</a>
       </div>
       <h1>{{ heading_title }}</h1>
       <ol class="breadcrumb">
@@ -14,84 +14,120 @@
       </ol>
     </div>
   </div>
+
   <div class="container-fluid">
-    <div class="card">
-      <div class="card-header"><i class="fa-solid fa-pencil"></i> {{ text_edit }}</div>
-      <div class="card-body">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-light py-3 border-bottom">
+        <h5 class="card-title m-0 fw-bold text-dark"><i class="fa-solid fa-file-invoice-dollar text-primary me-2"></i> {{ text_edit }}</h5>
+      </div>
+      <div class="card-body p-4">
         <form id="form-payment" action="{{ save }}" method="post" data-oc-toggle="ajax">
-          <div class="row mb-3">
-            <label for="input-status" class="col-sm-2 col-form-label">{{ entry_status }}</label>
-            <div class="col-sm-10">
-              <select name="payment_purchase_order_status" id="input-status" class="form-select">
-                <option value="1"{% if payment_purchase_order_status %} selected{% endif %}>{{ text_enabled }}</option>
-                <option value="0"{% if not payment_purchase_order_status %} selected{% endif %}>{{ text_disabled }}</option>
-              </select>
+          
+          <!-- Section 1: Pengaturan Umum / General Settings -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <h6 class="text-uppercase text-primary fw-bold mb-3 pb-2 border-bottom"><i class="fa-solid fa-sliders me-2"></i> General Settings</h6>
             </div>
-          </div>
-
-          <div class="row mb-3">
-            <label for="input-total" class="col-sm-2 col-form-label">{{ entry_total }}</label>
-            <div class="col-sm-10">
-              <input type="text" name="payment_purchase_order_total" value="{{ payment_purchase_order_total }}" placeholder="{{ entry_total }}" id="input-total" class="form-control" />
-              <div class="form-text">{{ help_total }}</div>
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <label for="input-order-status" class="col-sm-2 col-form-label">{{ entry_order_status }}</label>
-            <div class="col-sm-10">
-              <select name="payment_purchase_order_order_status_id" id="input-order-status" class="form-select">
-                {% for order_status in order_statuses %}
-                  <option value="{{ order_status.order_status_id }}"{% if order_status.order_status_id == payment_purchase_order_order_status_id %} selected{% endif %}>{{ order_status.name }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <label for="input-geo-zone" class="col-sm-2 col-form-label">{{ entry_geo_zone }}</label>
-            <div class="col-sm-10">
-              <select name="payment_purchase_order_geo_zone_id" id="input-geo-zone" class="form-select">
-                <option value="0">{{ text_all_zones }}</option>
-                {% for geo_zone in geo_zones %}
-                  <option value="{{ geo_zone.geo_zone_id }}"{% if geo_zone.geo_zone_id == payment_purchase_order_geo_zone_id %} selected{% endif %}>{{ geo_zone.name }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <label for="input-required" class="col-sm-2 col-form-label">{{ entry_required }}</label>
-            <div class="col-sm-10">
-              <select name="payment_purchase_order_required" id="input-required" class="form-select">
-                <option value="1"{% if payment_purchase_order_required %} selected{% endif %}>{{ text_yes }}</option>
-                <option value="0"{% if not payment_purchase_order_required %} selected{% endif %}>{{ text_no }}</option>
-              </select>
-              <div class="form-text">{{ help_required }}</div>
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <label for="input-sort-order" class="col-sm-2 col-form-label">{{ entry_sort_order }}</label>
-            <div class="col-sm-10">
-              <input type="text" name="payment_purchase_order_sort_order" value="{{ payment_purchase_order_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <label class="col-sm-2 col-form-label">{{ entry_customer_group }}</label>
-            <div class="col-sm-10">
-              <div class="form-control" style="height: 150px; overflow: auto;">
-                {% for customer_group in customer_groups %}
-                  <div class="form-check">
-                    <input type="checkbox" name="payment_purchase_order_customer_group_id[]" value="{{ customer_group.customer_group_id }}" id="input-customer-group-{{ customer_group.customer_group_id }}" class="form-check-input"{% if customer_group.customer_group_id in payment_purchase_order_customer_group_id %} checked{% endif %} />
-                    <label for="input-customer-group-{{ customer_group.customer_group_id }}" class="form-check-label">{{ customer_group.name }}</label>
-                  </div>
-                {% endfor %}
+            
+            <!-- Status -->
+            <div class="col-md-6 mb-3">
+              <label for="input-status" class="form-label fw-bold text-dark">{{ entry_status }}</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-secondary"><i class="fa-solid fa-toggle-on"></i></span>
+                <select name="payment_purchase_order_status" id="input-status" class="form-select fw-medium">
+                  <option value="1"{% if payment_purchase_order_status %} selected{% endif %}>{{ text_enabled }}</option>
+                  <option value="0"{% if not payment_purchase_order_status %} selected{% endif %}>{{ text_disabled }}</option>
+                </select>
               </div>
-              <div class="form-text">{{ help_customer_group }}</div>
+            </div>
+
+            <!-- Sort Order -->
+            <div class="col-md-6 mb-3">
+              <label for="input-sort-order" class="form-label fw-bold text-dark">{{ entry_sort_order }}</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-secondary"><i class="fa-solid fa-arrow-down-1-9"></i></span>
+                <input type="text" name="payment_purchase_order_sort_order" value="{{ payment_purchase_order_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
+              </div>
+            </div>
+
+            <!-- Order Status -->
+            <div class="col-md-6 mb-3">
+              <label for="input-order-status" class="form-label fw-bold text-dark">{{ entry_order_status }}</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-secondary"><i class="fa-solid fa-list-check"></i></span>
+                <select name="payment_purchase_order_order_status_id" id="input-order-status" class="form-select">
+                  {% for order_status in order_statuses %}
+                    <option value="{{ order_status.order_status_id }}"{% if order_status.order_status_id == payment_purchase_order_order_status_id %} selected{% endif %}>{{ order_status.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Require PO Number -->
+            <div class="col-md-6 mb-3">
+              <label for="input-required" class="form-label fw-bold text-dark">{{ entry_required }}</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-secondary"><i class="fa-solid fa-asterisk text-danger"></i></span>
+                <select name="payment_purchase_order_required" id="input-required" class="form-select">
+                  <option value="1"{% if payment_purchase_order_required %} selected{% endif %}>{{ text_yes }}</option>
+                  <option value="0"{% if not payment_purchase_order_required %} selected{% endif %}>{{ text_no }}</option>
+                </select>
+              </div>
+              <div class="form-text text-muted mt-1"><i class="fa-solid fa-circle-info text-info me-1"></i> {{ help_required }}</div>
             </div>
           </div>
+
+          <!-- Section 2: Aturan & Batasan / Rules & Restrictions -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <h6 class="text-uppercase text-primary fw-bold mb-3 pb-2 border-bottom"><i class="fa-solid fa-shield-halved me-2"></i> Rules & Restrictions</h6>
+            </div>
+
+            <!-- Total Minimum -->
+            <div class="col-md-6 mb-3">
+              <label for="input-total" class="form-label fw-bold text-dark">{{ entry_total }}</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-secondary"><i class="fa-solid fa-calculator"></i></span>
+                <input type="text" name="payment_purchase_order_total" value="{{ payment_purchase_order_total }}" placeholder="{{ entry_total }}" id="input-total" class="form-control" />
+              </div>
+              <div class="form-text text-muted mt-1"><i class="fa-solid fa-circle-info text-info me-1"></i> {{ help_total }}</div>
+            </div>
+
+            <!-- Geo Zone -->
+            <div class="col-md-6 mb-3">
+              <label for="input-geo-zone" class="form-label fw-bold text-dark">{{ entry_geo_zone }}</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-secondary"><i class="fa-solid fa-globe"></i></span>
+                <select name="payment_purchase_order_geo_zone_id" id="input-geo-zone" class="form-select">
+                  <option value="0">{{ text_all_zones }}</option>
+                  {% for geo_zone in geo_zones %}
+                    <option value="{{ geo_zone.geo_zone_id }}"{% if geo_zone.geo_zone_id == payment_purchase_order_geo_zone_id %} selected{% endif %}>{{ geo_zone.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Customer Group -->
+            <div class="col-12 mb-3">
+              <label class="form-label fw-bold text-dark">{{ entry_customer_group }}</label>
+              <div class="card border rounded-3 bg-light-subtle">
+                <div class="card-body p-3" style="max-height: 200px; overflow-y: auto;">
+                  <div class="row g-2">
+                    {% for customer_group in customer_groups %}
+                      <div class="col-sm-6 col-md-4">
+                        <div class="form-check p-2 rounded bg-white border shadow-sm h-100 d-flex align-items-center">
+                          <input type="checkbox" name="payment_purchase_order_customer_group_id[]" value="{{ customer_group.customer_group_id }}" id="input-customer-group-{{ customer_group.customer_group_id }}" class="form-check-input ms-1 me-2"{% if customer_group.customer_group_id in payment_purchase_order_customer_group_id %} checked{% endif %} />
+                          <label for="input-customer-group-{{ customer_group.customer_group_id }}" class="form-check-label fw-medium text-dark text-truncate" style="cursor: pointer;">{{ customer_group.name }}</label>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <div class="form-text text-muted mt-1"><i class="fa-solid fa-circle-info text-info me-1"></i> {{ help_customer_group }}</div>
+            </div>
+          </div>
+
         </form>
       </div>
     </div>
