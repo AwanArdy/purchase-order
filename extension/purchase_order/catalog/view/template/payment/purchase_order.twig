@@ -8,7 +8,7 @@
     </div>
     <div class="d-inline-block pt-2 pd-2 w-100">
       <div class="float-end">
-        <button type="button" id="button-confirm" class="btn btn-primary">{{ button_confirm }}</button>
+        <button type="button" id="button-confirm" class="btn btn-primary">{{ button_confirm ? button_confirm : 'Confirm Order' }}</button>
       </div>
     </div>
   </form>
@@ -19,7 +19,7 @@ $('#button-confirm').on('click', function() {
     var element = this;
 
     $.ajax({
-        url: 'index.php?route=extension/purchase_order/payment/purchase_order|confirm',
+        url: 'index.php?route=extension/purchase_order/payment/purchase_order|confirm&language={{ language }}',
         type: 'post',
         data: $('#form-purchase-order').serialize(),
         dataType: 'json',

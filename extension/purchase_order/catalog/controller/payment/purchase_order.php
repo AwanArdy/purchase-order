@@ -18,6 +18,8 @@ class PurchaseOrder extends \Opencart\System\Engine\Controller {
 		$this->load->language('extension/purchase_order/payment/purchase_order');
 
 		$data['required'] = (bool)$this->config->get('payment_purchase_order_required');
+		$data['language'] = $this->config->get('config_language');
+		$data['button_confirm'] = $this->language->get('button_confirm') ?: 'Confirm Order';
 
 		return $this->load->view('extension/purchase_order/payment/purchase_order', $data);
 	}
@@ -37,7 +39,7 @@ class PurchaseOrder extends \Opencart\System\Engine\Controller {
 
 		if ($required && $po_number === '') {
 			$json['error']['po_number'] = $this->language->get('error_blank_po_number');
-		} elseif ($po_number !== '' && !preg_match('/^[0-9a-zA-Z ]+$/', $po_number)) {
+		} elseif ($po_number !== '' && !preg_match('/^[0-9a-zA-Z\-\/\_\.\#\:\s]+$/', $po_number)) {
 			$json['error']['po_number'] = $this->language->get('error_invalid_po_number');
 		}
 
@@ -45,7 +47,7 @@ class PurchaseOrder extends \Opencart\System\Engine\Controller {
 			$this->load->model('checkout/order');
 
 			$order_id = (int)($this->session->data['order_id'] ?? 0);
-			$comment = $this->language->get('entry_po_number') . ': ' . $po_number;
+			$comment = $po_number !== '' ? $this->language->get('entry_po_number') . ': ' . $po_number : '';
 
 			if ($po_number !== '') {
 				$this->db->query("UPDATE `" . DB_PREFIX . "order` SET `payment_method` = '" . $this->db->escape($this->language->get('text_title') . ' (#' . $po_number . ')') . "' WHERE `order_id` = '" . $order_id . "'");
