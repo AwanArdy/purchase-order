@@ -45,7 +45,7 @@ class PurchaseOrder extends \Opencart\System\Engine\Model {
 			}
 
 			$allowed_groups = (array)$this->config->get('payment_purchase_order_customer_group_id');
-			if (!empty($allowed_groups) && !in_array($customer_group_id, $allowed_groups, true)) {
+			if (!empty($allowed_groups) && !in_array($customer_group_id, array_map('intval', $allowed_groups), true)) {
 				$status = false;
 			}
 		}
