@@ -47,13 +47,29 @@ class PurchaseOrder extends \Opencart\System\Engine\Controller {
 			$this->load->model('checkout/order');
 
 			$order_id = (int)($this->session->data['order_id'] ?? 0);
-			$comment = $po_number !== '' ? $this->language->get('entry_po_number') . ': ' . $po_number : '';
+			$po_title = $this->language->get('text_title') . ($po_number !== '' ? ' (#' . $po_number . ')' : '');
 
-			if ($po_number !== '') {
-				$this->db->query("UPDATE `" . DB_PREFIX . "order` SET `payment_method` = '" . $this->db->escape($this->language->get('text_title') . ' (#' . $po_number . ')') . "' WHERE `order_id` = '" . $order_id . "'");
+			// Update session payment method if present
+			if (isset($this->session->data['payment_method']) && is_array($this->session->data['payment_method'])) {
+				$this->session->data['payment_method']['name'] = $po_title;
+				$this->session->data['payment_method']['title'] = $po_title;
 			}
 
+			// Format payment_method as JSON for OpenCart 4 compatibility
+			$payment_method_data = [
+				'name' => $po_title,
+				'code' => 'purchase_order.purchase_order'
+			];
+
+			$payment_method_json = json_encode($payment_method_data);
+
+			if ($order_id) {
+				$this->db->query("UPDATE `" . DB_PREFIX . "order` SET `payment_method` = '" . $this->db->escape($payment_method_json) . "' WHERE `order_id` = '" . $order_id . "'");
+			}
+
+			$comment = $po_number !== '' ? $this->language->get('entry_po_number') . ': ' . $po_number : '';
 			$order_status_id = (int)$this->config->get('payment_purchase_order_order_status_id');
+
 			$this->model_checkout_order->addHistory($order_id, $order_status_id, $comment, true);
 
 			$json['redirect'] = $this->url->link('checkout/success', 'language=' . $this->config->get('config_language'), true);
